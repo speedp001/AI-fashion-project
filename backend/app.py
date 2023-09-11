@@ -1,17 +1,29 @@
 # Flask 애플리케이션에서 사용하는 메인 파일 (app.py)
 
+import io
 import cv2
 import numpy as np
 import threading
+import bcrypt # 암호 해싱 지원 라이브러리
 
+from pymongo import MongoClient
 from rembg import remove
-from flask import Flask, request, jsonify
+from PIL import Image
+from flask import Flask, request, jsonify, redirect, make_response
 from classifier import ItemClassifier, ColorClassifier
+
+
 
 
 
 app = Flask(__name__)
 
+
+####### DB connection
+client = MongoClient("mongodb+srv://sudo:sudo@atlascluster.e7pmjep.mongodb.net/")
+user = client["user"]
+user_info = user.info
+app = Flask(__name__)
 
 ####### MyClassifier 클래스 인스턴스 생성
 item_classifier = ItemClassifier()
@@ -37,11 +49,26 @@ def rembg(img):
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
-        # 사용자 정보 불러오기
-        image = request.json['image']['file'][1].read()
-        style = request.files['style'].read()
-        email = request.files['email'].read()
+        # # 사용자 정보 불러오기 -> 앞으로 해야할 부분
+        # # 일단 주석처리 해놓겠습니다
+        # image = request.json['image']['file'][1].read()
+        # style = request.files['style'].read()
+        # email = request.files['email'].read()
 
+        # 현준님이 테스트해본 코드
+        # 성공여부 확인하면 삭제
+        email = request.files["email"].read().decode("utf-8")
+        style = request.files["style"].read().decode("utf-8")
+        image = request.files["image"].read()
+        gender = "0" if user_info.find_one({"email": email})["gender"] == "남성" else 1
+        img_byte = io.BytesIO(image)
+        img = Image.open(img_byte)
+        color_rembg_img, item_rembg_img = rembg(img)
+        img.save("res.png")
+        color_rembg_img.save("color_rembg_img.png")
+        item_rembg_img.save("item_rembg_img.png")
+        exit()
+        
         # 이미지 전처리 -> 배경제거
         rembg_image = rembg(image)
 
@@ -94,6 +121,54 @@ def upload():
         # 오류 처리 및 오류 코드 반환 -> 클라이언트 이미지 형식 문제, http통신 문제
         error_message = str(e)
         return jsonify({'error': error_message}), 400
+    
+    
+@app.route("/sign-up", methods=["POST"])
+def sign_up():
+    info = request.json  # => front
+    username = info["username"]
+    email = info["email"]
+    pw = info["pw"]
+    gender = 0 if info["gender"] == "남성" else 1
+    info["gender"] = gender
+    hashed_pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
+    existing_user = user_info.find_one({"username": username, "email": email})
+    if existing_user:
+        return {
+            "msg": "User with the same username and id already exists. Try another one."
+        }
+    else:
+        info["pw"] = hashed_pw.decode("utf-8")
+        user_info.insert_one(info)
+        res = {"msg": "User registration has been successfully done."}
+        return jsonify(res), 200
+
+
+@app.route("/sign-in", methods=["GET", "POST"])
+def sign_in():
+    info = request.json
+    email = info["email"]
+    pw = info["pw"]
+    user = user_info.find_one({"email": email})  # From db
+    if user:
+        if bcrypt.checkpw(pw.encode("utf-8"), user["pw"].encode("utf-8")):
+            gender = 0 if user["gender"] == "남성" else 1
+            print(gender)
+            res = make_response(jsonify({"msg": "Sign-in successful!"}), 200)
+            res.set_cookie("gender", gender)
+            return jsonify({"msg": "Sign-in successful!"}), 200
+        else:
+            print("sth wrong")
+            return jsonify({"msg": "Invalid email or password."}), 401
+
+
+@app.route("/logout")
+def logout():
+    res = make_response(redirect("http://localhost:8501"))
+    res.delete_cookie("user_token")
+    return res
+    
+    
     
 
 if __name__ == '__main__':
