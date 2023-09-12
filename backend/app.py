@@ -31,20 +31,12 @@ app = Flask(__name__)
 
 
 ####### 사용자 이미지 배경제거 함수
-<<<<<<< HEAD
 def rembg(img):
     # 이미지 데이터를 바이너리에서 이미지로 디코딩
     org_image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
     # BGR에서 RGB로 변환
     # org_image = cv2.cvtColor(org_image, cv2.COLOR_BGR2RGB)
 
-=======
-def rembg_img(img):
-
-    # 이미지 데이터를 바이너리에서 이미지로 디코딩
-    org_image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
     # 배경을 흰색으로 변경 -> bgcolor=(b, g, r, a)
     color_rembg_img = remove(org_image, only_mask=True)
     item_rembg_img = remove(org_image, bgcolor=(255, 255, 255, 255))
@@ -56,7 +48,6 @@ def rembg_img(img):
 @app.route("/upload", methods=["POST"])
 def upload():
     try:
-<<<<<<< HEAD
         # 사용자 정보 불러오기
         email = request.files["email"].read().decode("utf-8")
         style = request.files["style"].read().decode("utf-8")
@@ -69,36 +60,18 @@ def upload():
         img_byte = io.BytesIO(image).getvalue()
         nparr = np.frombuffer(img_byte, np.uint8)
         item_rembg_img, color_rembg_img,  = rembg(nparr)
-=======
-        email = request.files["email"].read().decode("utf-8")
-        style = request.files["style"].read().decode("utf-8")
-        image = request.files["image"].read()
-        gender = "0" if user_info.find_one({"email": email})["gender"] == "남성" else 1
-        img_byte = io.BytesIO(image).getvalue()
-        nparr = np.frombuffer(img_byte, np.uint8)
-        color_rembg_img, item_rembg_img = rembg_img(nparr)
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
         cv2.imwrite("./color_rembg_img.png", color_rembg_img)
         cv2.imwrite("./item_rembg_img.png", item_rembg_img)
         print(email, style, gender)
         print(style.split(","))
-<<<<<<< HEAD
-        
-        # 멀티스레딩
-        try:
-            # 멀티 스레딩으로 클래스 내부 함수 실행
-            thread1 = threading.Thread(target=item_classifier.item_predict, args=(item_rembg_img,))
-            thread2 = threading.Thread(target=color_classifier.color_predict, args=(color_rembg_img,))
-=======
         print(item_rembg_img.shape)
         print(color_rembg_img.shape)
 
         # 멀티스레딩
         try:
             # 멀티 스레딩으로 클래스 내부 함수 실행
-            thread1 = threading.Thread(target=color_classifier.color_predict, args=(item_rembg_img[:,:,:3],color_rembg_img,))
-            thread2 = threading.Thread(target=item_classifier.item_predict, args=(item_rembg_img[:,:,:3],))
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
+            thread1 = threading.Thread(target=color_classifier.color_predict, args=(item_rembg_img[:,:,:3],))
+            thread2 = threading.Thread(target=item_classifier.item_predict, args=(color_rembg_img[:,:,:3], color_rembg_img,))
             thread3 = threading.Thread(target=item_classifier.style_predict, args=(style,))
 
             # 스레드 시작
@@ -124,12 +97,7 @@ def upload():
 
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제
-<<<<<<< HEAD
             error_message = f"Thread error: {str(e)}"
-=======
-            error_message = str(e)
-            print("CHECK:", error_message)
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
             return jsonify({'error': error_message}), 500
 
         # DB에서 1,2,3,4 정보 조합해서 정보 조회
