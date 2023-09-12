@@ -71,7 +71,7 @@ def upload():
         try:
             # 멀티 스레딩으로 클래스 내부 함수 실행
             thread1 = threading.Thread(target=item_classifier.item_predict, args=(item_rembg_img[:,:,:3],))
-            thread2 = threading.Thread(target=color_classifier.color_predict, args=(item_rembg_img[:,:,:3], color_rembg_img,))
+            thread2 = threading.Thread(target=color_classifier.color_predict, args=(item_rembg_img[:,:,:3], color_rembg_img))
             thread3 = threading.Thread(target=item_classifier.style_predict, args=(style,))
 
             # 스레드 시작
