@@ -121,8 +121,8 @@ class ItemClassifier:
         return predicted_item_str
 
     
-    def style_predict(self):
-        predicted_style_str = self.item_dictionary[self.style_dictionary.item()]
+    def style_predict(self, style):
+        predicted_style_str = self.style_dictionary[style]
         
         return predicted_style_str
     
@@ -215,7 +215,7 @@ class ColorClassifier:
         dom_counts = [label_counts[i] for i in labels[:3]]
         total = sum(dom_counts)
         # Each cluster's rate
-        dom_counts_rate = [(i / total for i in dom_counts)*100]
+        dom_counts_rate = [i / total for i in dom_counts]
         
         # Top3 colors
         dom_colors = [colors[i] for i in labels[:3]]
@@ -231,7 +231,7 @@ class ColorClassifier:
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-                if image_data[i][j] > 100
+                if image_data[i][j] > 200
             ]
         )
         
