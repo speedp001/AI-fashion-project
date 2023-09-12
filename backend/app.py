@@ -31,12 +31,10 @@ color_classifier = ColorClassifier()
 
 
 ####### 사용자 이미지 배경제거 함수
-def rembg(img):
+def rembg_img(img):
 
     # 이미지 데이터를 바이너리에서 이미지로 디코딩
     org_image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-    # BGR에서 RGB로 변환
-    org_image = cv2.cvtColor(org_image, cv2.COLOR_BGR2RGB)
     
     # 배경을 흰색으로 변경 -> bgcolor=(b, g, r, a)
     color_rembg_img = remove(org_image, only_mask=True)
@@ -49,34 +47,25 @@ def rembg(img):
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
-        # # 사용자 정보 불러오기 -> 앞으로 해야할 부분
-        # # 일단 주석처리 해놓겠습니다
-        # image = request.json['image']['file'][1].read()
-        # style = request.files['style'].read()
-        # email = request.files['email'].read()
-
-        # 현준님이 테스트해본 코드
-        # 성공여부 확인하면 삭제
         email = request.files["email"].read().decode("utf-8")
         style = request.files["style"].read().decode("utf-8")
         image = request.files["image"].read()
         gender = "0" if user_info.find_one({"email": email})["gender"] == "남성" else 1
-        img_byte = io.BytesIO(image)
-        img = Image.open(img_byte)
-        color_rembg_img, item_rembg_img = rembg(img)
-        img.save("res.png")
-        color_rembg_img.save("color_rembg_img.png")
-        item_rembg_img.save("item_rembg_img.png")
-        exit()
-        
-        # 이미지 전처리 -> 배경제거
-        rembg_image = rembg(image)
+        img_byte = io.BytesIO(image).getvalue()
+        nparr = np.frombuffer(img_byte, np.uint8)
+        color_rembg_img, item_rembg_img = rembg_img(nparr)
+        cv2.imwrite("./color_rembg_img.png", color_rembg_img)
+        cv2.imwrite("./item_rembg_img.png", item_rembg_img)
+        print(email, style, gender)
+        print(style.split(","))
+        print(item_rembg_img.shape)
+        print(color_rembg_img.shape)
 
         # 멀티스레딩
         try:
             # 멀티 스레딩으로 클래스 내부 함수 실행
-            thread1 = threading.Thread(target=color_classifier.color_predict, args=(rembg_image[0],))
-            thread2 = threading.Thread(target=item_classifier.item_predict, args=(rembg_image[1],))
+            thread1 = threading.Thread(target=color_classifier.color_predict, args=(item_rembg_img[:,:,:3],color_rembg_img,))
+            thread2 = threading.Thread(target=item_classifier.item_predict, args=(item_rembg_img[:,:,:3],))
             thread3 = threading.Thread(target=item_classifier.style_predict, args=(style,))
             # thread4 = gender -> db정보 read
             
@@ -102,6 +91,7 @@ def upload():
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제
             error_message = str(e)
+            print("CHECK:", error_message)
             return jsonify({'error': error_message}), 500
 
 
@@ -149,17 +139,13 @@ def sign_in():
     info = request.json
     email = info["email"]
     pw = info["pw"]
-    user = user_info.find_one({"email": email})  # From db
+    user = user_info.find_one({"email": email})
     if user:
         if bcrypt.checkpw(pw.encode("utf-8"), user["pw"].encode("utf-8")):
-            gender = 0 if user["gender"] == "남성" else 1
-            print(gender)
-            res = make_response(jsonify({"msg": "Sign-in successful!"}), 200)
-            res.set_cookie("gender", gender)
+            username = user["username"]
             return jsonify({"msg": "Sign-in successful!"}), 200
-        else:
-            print("sth wrong")
-            return jsonify({"msg": "Invalid email or password."}), 401
+    else:
+        return jsonify({"message": "이메일 주소와 비밀번호를 확인해주세요."}), 401
 
 
 @app.route("/logout")

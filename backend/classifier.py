@@ -90,7 +90,6 @@ class ItemClassifier:
 
 
     def image_preprocessing(self, image_data):
-        
         image_transform = A.Compose([
             A.Resize(width=480, height=640),
             A.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -101,12 +100,10 @@ class ItemClassifier:
             img = image_transform(image=image_data)['image']
 
         img = img.unsqueeze(0).to(self.device)
-        
         return img
 
 
     def item_predict(self, image_data):
-        
         image_tensor = self.image_preprocessing(image_data)
 
         with torch.no_grad():
@@ -121,7 +118,7 @@ class ItemClassifier:
         return predicted_item_str
 
     
-    def style_predict(self):
+    def style_predict(self): # argument 없음 acensia
         predicted_style_str = self.item_dictionary[self.style_dictionary.item()]
         
         return predicted_style_str
@@ -137,7 +134,7 @@ class ColorClassifier:
     
     def __init__(self):
         # Read JSON file
-        with open("./backend/hex_map.json", "r") as j:
+        with open("./hex_map.json", "r") as j:
             self.hex_dict = json.load(j)
         
         self.color_dictionary = self.create_color_dictionary()
@@ -215,7 +212,7 @@ class ColorClassifier:
         dom_counts = [label_counts[i] for i in labels[:3]]
         total = sum(dom_counts)
         # Each cluster's rate
-        dom_counts_rate = [(i / total for i in dom_counts)*100]
+        dom_counts_rate = [i / total * 100 for i in dom_counts] # generator * int 안된다는 오류 acensia
         
         # Top3 colors
         dom_colors = [colors[i] for i in labels[:3]]
@@ -223,15 +220,15 @@ class ColorClassifier:
         return dom_colors, dom_counts_rate
 
 
-    def color_predict(self, image_data):
+    def color_predict(self, image_data, mask_data): # image_data 에 mask img만 들어왔음 acensia
         height, width, _ = image_data.shape
-
+        print(image_data.shape)
         cropped_list = np.array(
             [
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-                if image_data[i][j] > 100
+                if mask_data[i][j] > 200 # mask 허용 범위 변경 acensia
             ]
         )
         
@@ -245,13 +242,12 @@ class ColorClassifier:
         fst_cvt216 = self.cvt216(fst)
         snd_cvt216 = self.cvt216(snd)
         trd_cvt216 = self.cvt216(trd)
-        
         p1, p2, p3 = (
-            self.color_dictionary[self.rgb_to_hex(fst_cvt216)],
-            self.color_dictionary[self.rgb_to_hex(snd_cvt216)],
-            self.color_dictionary[self.rgb_to_hex(trd_cvt216)],
+            self.hex_dict[self.rgb_to_hex(fst_cvt216)],
+            self.hex_dict[self.rgb_to_hex(snd_cvt216)],
+            self.hex_dict[self.rgb_to_hex(trd_cvt216)],
         )
         
-        predicted_color_str = self.color_dictionary[p1.item()]
+        predicted_color_str = self.color_dictionary[p1]
 
         return predicted_color_str
