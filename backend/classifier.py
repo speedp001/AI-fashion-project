@@ -118,13 +118,8 @@ class ItemClassifier:
         return predicted_item_str
 
     
-<<<<<<< HEAD
     def style_predict(self, style):
         predicted_style_str = self.style_dictionary[style]
-=======
-    def style_predict(self): # argument 없음 acensia
-        predicted_style_str = self.item_dictionary[self.style_dictionary.item()]
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
         
         return predicted_style_str
     
@@ -217,11 +212,7 @@ class ColorClassifier:
         dom_counts = [label_counts[i] for i in labels[:3]]
         total = sum(dom_counts)
         # Each cluster's rate
-<<<<<<< HEAD
         dom_counts_rate = [i / total for i in dom_counts]
-=======
-        dom_counts_rate = [i / total * 100 for i in dom_counts] # generator * int 안된다는 오류 acensia
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
         
         # Top3 colors
         dom_colors = [colors[i] for i in labels[:3]]
@@ -237,11 +228,7 @@ class ColorClassifier:
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-<<<<<<< HEAD
                 if image_data[i][j] > 200
-=======
-                if mask_data[i][j] > 200 # mask 허용 범위 변경 acensia
->>>>>>> 8a8cd75943b794f8dbb5889e5dd966ded866ae62
             ]
         )
         
