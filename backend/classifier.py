@@ -228,7 +228,7 @@ class ColorClassifier:
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-                if image_data[i][j] > 200
+                if mask_data[i][j] > 200
             ]
         )
         
