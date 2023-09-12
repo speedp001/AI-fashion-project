@@ -48,7 +48,7 @@ def upload():
         image = request.files["image"].read()
         
         # DB에서 email로 gender 조회
-        gender = "0" if user_info.find_one({"email": email})["gender"] == "남성" else 1
+        gender = "0" if user_info.find_one({"email": email})["gender"] == 0 else "1"
         
         # 사용자 upload 이미지
         img_byte = io.BytesIO(image).getvalue()
@@ -98,22 +98,21 @@ def upload():
 ####### Sign-up
 @app.route("/sign-up", methods=["POST"])
 def sign_up():
-    info = request.json  # => front
-    username = info["username"]
-    email = info["email"]
-    pw = info["pw"]
-    gender = 0 if info["gender"] == "남성" else 1
-    info["gender"] = gender
+    signup_info = request.json  # => front
+    username = signup_info["username"]
+    email = signup_info["email"]
+    pw = signup_info["pw"]
+    gender = 0 if signup_info["gender"] == "남성" else 1
+    signup_info["gender"] = gender
     hashed_pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
-    existing_user = user_info.find_one({"username": username, "email": email})
+    existing_user = user_info.find_one({"username": username, "email": email, "gender": gender})
     if existing_user:
-        return {
-            "msg": "User with the same username and id already exists. Try another one."
-        }
+        res = {"msg": "User with the same username and id already exists. Try another one."}
+        return jsonify(res), 402
     else:
-        info["pw"] = hashed_pw.decode("utf-8")
-        user_info.insert_one(info)
-        res = {"msg": "User registration has been successfully done."}
+        pw = hashed_pw.decode("utf-8")
+        user_info.insert_one(signup_info)
+        res = {"msg": f"{username}님 회원가입을 축하드립니다."}
         return jsonify(res), 200
 
 
@@ -131,9 +130,9 @@ def login():
     if user_document:
         if bcrypt.checkpw(login_pw.encode("utf-8"), user_document["pw"].encode("utf-8")):
             username = user_document["username"]
-            return jsonify({"message": f"환영합니다. {username}님"}), 200
+            return jsonify({"msg": f"환영합니다. {username}님"}), 200
     else:
-        return jsonify({"message": "이메일 주소와 비밀번호를 확인해주세요."}), 401
+        return jsonify({"msg": "이메일 주소와 비밀번호를 확인해주세요."}), 401
 
 
 ####### Logout
