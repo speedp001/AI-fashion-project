@@ -3,7 +3,6 @@
 import io
 import cv2
 import numpy as np
-import threading
 import bcrypt # 암호 해싱 지원 라이브러리
 
 from pymongo import MongoClient
@@ -48,7 +47,7 @@ def upload():
         image = request.files["image"].read()
         
         # DB에서 email로 gender 조회
-        gender = "0" if user_info.find_one({"email": email})["gender"] == 0 else "1"
+        gender = "0" if user_info.find_one({"email": email})["gender"] == "남성" else "1"
         
         # 사용자 upload 이미지
         img_byte = io.BytesIO(image).getvalue()
