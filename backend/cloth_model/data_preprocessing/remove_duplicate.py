@@ -11,6 +11,7 @@ def image_hash(file_path):
         image_data = f.read()
         return hashlib.md5(image_data).hexdigest()
 
+# 중복 검사 함수
 def find_and_remove_duplicate_images(folder_path):
     image_hashes = {}
     duplicate_count = 0
@@ -31,6 +32,9 @@ def find_and_remove_duplicate_images(folder_path):
                     image_hashes[img_hash] = file_path
 
     print(f"총 {duplicate_count}개의 중복 이미지를 삭제했습니다.")
+
+
+
 
 if __name__ == "__main__":
     find_and_remove_duplicate_images(folder_path)
