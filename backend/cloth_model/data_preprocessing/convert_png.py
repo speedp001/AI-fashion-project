@@ -5,7 +5,7 @@ import os
 from tqdm import tqdm
 
 # 변환할 폴더의 경로를 설정
-base_dir = './fw'
+base_dir = './'
 
 # "Filtered" 폴더 생성
 filtered_folder_path = os.path.join(base_dir, "fw_filtered")
