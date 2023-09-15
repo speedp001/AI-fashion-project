@@ -4,6 +4,9 @@ import io
 import cv2
 import numpy as np
 import bcrypt # 암호 해싱 지원 라이브러리
+from flask_mail import Mail, Message
+import random
+import string
 
 from pymongo import MongoClient
 from rembg import remove
@@ -16,6 +19,18 @@ from db_search import DB_search # acensia
 
 
 app = Flask(__name__)
+
+
+# Flask-Mail config
+app.config["MAIL_SERVER"] = "smtp.gmail.com"  # 이메일 호스트 서버 설정
+app.config["MAIL_PORT"] = 587  # 이메일 호스트 포트 설정 (일반적으로 587 또는 465)
+app.config["MAIL_USE_TLS"] = True  # TLS(Transport Layer Security) 사용 여부 설정
+app.config["MAIL_USERNAME"] = "kdhwi92@gmail.com"  # 이메일 계정
+app.config["MAIL_PASSWORD"] = "kgnfjnorrakfrwzq"  # 이메일 비밀번호
+# Mail 인스턴스 생성
+mail = Mail(app)
+
+email_verification_codes = {}
 
 ####### MyClassifier 클래스 인스턴스 생성
 item_classifier = ItemClassifier()
@@ -102,37 +117,42 @@ def upload():
 ####### Sign-up
 @app.route("/sign-up", methods=["POST"])
 def sign_up():
-    signup_info = request.json  # => front
-    username = signup_info["username"]
-    email = signup_info["email"]
-    pw = signup_info["pw"]
-    gender = 0 if signup_info["gender"] == "남성" else 1
-    signup_info["gender"] = gender
+    signup_data = request.json  # => front
+    username = signup_data["username"]
+    email = signup_data["email"]
+    pw = signup_data["pw"]
+    gender = 0 if signup_data["gender"] == "Male" else 1
+    signup_data["gender"] = gender
     hashed_pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
-    existing_user = user_info.find_one({"username": username, "email": email, "gender": gender})
-    if existing_user:
-        res = {"msg": "User with the same username and id already exists. Try another one."}
-        return jsonify(res), 402
+
+    if user_info.find_one({"username": username}):
+        res = {"msg": "User with the same username already exists. Try another one."}
+        return jsonify(res), 400
+    elif user_info.find_one({"email": email}):
+        res = {"msg": "User with the same username already exists. Try another one."}
+        return jsonify(res), 400
     else:
-        pw = hashed_pw.decode("utf-8")
-        user_info.insert_one(signup_info)
+        signup_data["pw"] = hashed_pw.decode("utf-8")
+        user_info.insert_one(signup_data)
         res = {"msg": f"{username}님 회원가입을 축하드립니다."}
         return jsonify(res), 200
 
 
 ####### Login
-@app.route("/login", methods=["POST"])  
+@app.route("/login", methods=["POST"])
 def login():
     login_info = request.json
     login_email = login_info["email"]
     login_pw = login_info["pw"]
-    
+
     # email 정보로 찾은 user document
     user_document = user_info.find_one({"email": login_email})
-    
+
     # if user는 해당 이메일 주소와 일치하는 사용자가 데이터베이스에서 찾아졌을 때 True가 되고, 사용자가 찾아지지 않은 경우 False
     if user_document:
-        if bcrypt.checkpw(login_pw.encode("utf-8"), user_document["pw"].encode("utf-8")):
+        if bcrypt.checkpw(
+            login_pw.encode("utf-8"), user_document["pw"].encode("utf-8")
+        ):
             username = user_document["username"]
             return jsonify({"msg": f"환영합니다. {username}님"}), 200
     else:
@@ -146,6 +166,60 @@ def logout():
     res.delete_cookie("user_token")
     return res
     
+
+@app.route("/check_username", methods=["POST"])
+def check_username():
+    username = request.form["username"]
+    # 'username' 필드로 중복을 확인
+    if user_info.find_one({"username": username}):
+        return jsonify({"available": False})
+    return jsonify({"available": True})
+
+
+@app.route("/send_code", methods=["POST"])
+def send_code():
+    signup_id = request.form["id"]
+    # 'id' 필드로 중복을 확인
+    if user_info.find_one({"id": signup_id}):
+        return jsonify({"available": False})
+
+    # 이메일 인증 코드 생성 함수
+    def generate_verification_code():
+        # 4자리 숫자로 된 랜덤 코드 생성
+        return "".join(random.choices(string.digits, k=4))
+
+    # 이메일 보내기 함수
+    def send_email(signup_id, verification_code):
+        msg = Message("이메일 인증 코드", sender="help@example.com", recipients=[signup_id])
+        msg.body = f"인증 코드: {verification_code}"
+        mail.send(msg)
+
+    # 이메일 인증 코드 생성
+    verification_code = generate_verification_code()
+    # 이메일 보내기 함수 호출
+    send_email(signup_id, verification_code)
+    # email_verification_codes 딕셔너리에 저장
+    email_verification_codes[signup_id] = verification_code
+    return jsonify(
+        {
+            "available": True,
+            "message": "이메일로 인증 코드가 전송되었습니다.",
+            "verification_code": verification_code,
+        }
+    )
+
+
+@app.route("/verify", methods=["POST"])
+def verify():
+    signup_id = request.form["signup_id"]
+    entered_code = request.form["verification_code"]
+    stored_verification_code = email_verification_codes.get(signup_id)
+    if not stored_verification_code:
+        return jsonify({"message": "인증 코드를 요청하지 않았거나 유효하지 않습니다."}), 400
+    if stored_verification_code == entered_code:
+        return jsonify({"message": "인증 코드가 유효합니다. 이메일이 성공적으로 인증되었습니다."}), 200
+    else:
+        return jsonify({"message": "인증 코드가 유효하지 않습니다. 다시 확인하세요."}), 400
     
     
 
