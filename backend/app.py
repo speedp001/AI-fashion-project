@@ -78,9 +78,9 @@ def upload():
 
         # DB에서 1,2,3,4 정보 조합해서 정보 조회
         try:
-            pass
+            # pass
             #json형태로 200코드와 조회 이미지를 딕셔너리형태로 클라이언트한테 반환해준다.
-            # return jsonify({'recommend_image': image }), 200
+            return jsonify({'recommend_image': "Hi" }), 200
         
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제

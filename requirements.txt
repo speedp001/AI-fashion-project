@@ -1,0 +1,6 @@
+opencv-python
+bcrypt
+rembg
+flask
+pymongo
+albumentations
