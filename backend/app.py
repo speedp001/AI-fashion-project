@@ -56,6 +56,7 @@ def upload():
         img_byte = io.BytesIO(image).getvalue()
         img_array = np.frombuffer(img_byte, np.uint8)
         item_rembg_img, color_rembg_img,  = rembg(img_array)
+        og_img = cv2.imdecode(np.frombuffer(img_array, np.uint8), cv2.IMREAD_COLOR)
 
         # Item, Color, Style 판단
         try:
@@ -63,7 +64,7 @@ def upload():
             with ThreadPoolExecutor() as executor:
                 # 함수들을 제출하고 결과를 얻음
                 predicted_label1 = executor.submit(item_classifier.item_predict, item_rembg_img[:,:,:3]).result()
-                predicted_label2 = executor.submit(color_classifier.color_predict, item_rembg_img[:,:,:3], color_rembg_img).result()
+                predicted_label2 = executor.submit(color_classifier.color_predict, og_img, color_rembg_img).result()
                 predicted_label3 = executor.submit(item_classifier.style_predict, style).result()
 
             # 스레드 풀 종료
@@ -81,13 +82,14 @@ def upload():
 
         # DB에서 1,2,3,4 정보 조합해서 정보 조회
         try:
-            DB_search(client, search_code)
+            rec, result = DB_search(client, search_code)
             #json형태로 200코드와 조회 이미지를 딕셔너리형태로 클라이언트한테 반환해준다.
-            return jsonify({'recommend_image': "image" }), 200
+            return jsonify({'rec' : rec, 'result' : result}), 200
         
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제
             error_message = f"DB error: {str(e)}"
+            print(error_message)
             return jsonify({'error': error_message}), 500    
         
     

@@ -3,7 +3,7 @@ from flask_mail import Mail, Message
 import random
 import string
 
-app = Flask(__name__)
+from app import app
 
 # Flask-Mail 설정
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # 이메일 호스트 서버 설정
