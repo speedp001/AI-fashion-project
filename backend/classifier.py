@@ -9,9 +9,7 @@ import albumentations as A
 from sklearn.cluster import KMeans
 from albumentations.pytorch import ToTensorV2
 
-
-
-
+from reference import style_dict
 
 
 
@@ -21,7 +19,7 @@ class ItemClassifier:
         self.device = self.gpu()
         self.model = self.initialize_model()
         # self.item_dictionary = self.create_item_dictionary()
-        self.style_dictionary = self.create_style_dictionary()
+        self.style_dictionary = style_dict # acensia
 
 
     def gpu(self):
@@ -83,10 +81,10 @@ class ItemClassifier:
     #     reverse_item_dict = {v: k for k, v in item_dict.items()}
     #     return reverse_item_dict
     
-    def create_style_dictionary(self):
-        style_dict = {'casual': '0', 'dandy': '1', 'formal': '2', 'girlish': '3', 'gorpcore': '4', 'retro': '5', 'romantic': '6', 'sports': '7', 'street': '8'}
+    # def create_style_dictionary(self):
+    #     style_dict = {'casual': '0', 'dandy': '1', 'formal': '2', 'girlish': '3', 'gorpcore': '4', 'retro': '5', 'romantic': '6', 'sports': '7', 'street': '8'}
         
-        return style_dict
+    #     return style_dict # acensia
 
 
     def image_preprocessing(self, image_data):

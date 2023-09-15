@@ -13,7 +13,7 @@ def DB_search(client, itemcode):
     singles = item_coll.find({"code":{"$regex": search_code}}, {"_id":0})
     
     matched = []
-    styles = np.zeros(9, dtype=int)
+    styles = np.zeros(len(style_array), dtype=int)
     
     for s in singles:
         styles[int(s["code"][1])] += 1
