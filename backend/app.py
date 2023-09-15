@@ -1,7 +1,6 @@
 # Flask 애플리케이션에서 사용하는 메인 파일 (app.py)
 
 import io
-import cv2
 import random
 import string
 import numpy as np
@@ -30,7 +29,7 @@ color_classifier = ColorClassifier()
 
 ####### Mail 인스턴스 생성
 mail = Mail(app)
-email_verification_codes = {}
+email_verification_codes = {}  # 인증코드 저장 딕셔너리
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"  # 이메일 호스트 서버 설정
 app.config["MAIL_PORT"] = 587  # 이메일 호스트 포트 설정 (일반적으로 587 또는 465)
@@ -47,47 +46,35 @@ user_info = user.info
 
 
 
-####### 사용자 이미지 배경제거 함수
-def rembg(img):
-    # 이미지 데이터를 바이너리에서 이미지로 디코딩
-    org_image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
-
-    # 배경을 흰색으로 변경 -> bgcolor=(b, g, r, a)
-    color_rembg_img = remove(org_image, only_mask=True)
-    item_rembg_img = remove(org_image, bgcolor=(255, 255, 255, 255))
-
-    return item_rembg_img, color_rembg_img
-
-
-
 ####### Sign-up
-@app.route("/sign-up", methods=["POST"])
+@app.route("/sign_up", methods=["POST"])
 def sign_up():
-    signup_info = request.json  # front
-    username = signup_info["username"]  # 사용자 이름
-    email = signup_info["email"]  # 가입 이메일
-    pw = signup_info["pw"]  # 가입 비밀번호
-    gender = 0 if signup_info["gender"] == "Male" else 1  # 성별
-    signup_info["gender"] = gender
+    signup_data = request.json  # front
+    username = signup_data["username"]  # 사용자 이름
+    email = signup_data["email"]  # 가입 이메일
+    pw = signup_data["pw"]  # 가입 비밀번호
+    gender = 0 if signup_data["gender"] == "Male" else 1  # 성별
+    signup_data["gender"] = gender
     
     # 비밀번호 해쉬화
     hashed_pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
     
     # 가입 조건 확인
     if user_info.find_one({"username": username}):
-        res = {"msg": "User with the same username already exists. Try another one."}
+        res = {"msg": "이미 사용중인 닉네임입니다. "}
         return jsonify(res), 400
     elif user_info.find_one({"email": email}):
-        res = {"msg": "User with the same username already exists. Try another one."}
+        res = {"msg": "이미 가입된 이메일입니다."}
         return jsonify(res), 400
     else:
-        signup_info["pw"] = hashed_pw.decode("utf-8")
-        user_info.insert_one(signup_info)
+        signup_data["pw"] = hashed_pw.decode("utf-8")
+        user_info.insert_one(signup_data)
         res = {"msg": f"{username}님 회원가입을 축하드립니다."}
         return jsonify(res), 200
     
     
-#######
+    
+####### Check username
 @app.route("/check_username", methods=["POST"])
 def check_username():
     username = request.form["username"]
@@ -97,7 +84,8 @@ def check_username():
     return jsonify({"available": True})
 
 
-#######
+
+####### Send email code
 @app.route("/send_code", methods=["POST"])
 def send_code():
     signup_id = request.form["id"]
@@ -112,16 +100,20 @@ def send_code():
 
     # 이메일 보내기 함수
     def send_email(signup_id, verification_code):
-        msg = Message("이메일 인증 코드", sender="help@example.com", recipients=[signup_id])
+        msg = Message("이메일 인증 코드", sender="help@example.com", recipients=[signup_id])  # recipients 받을 사람의 목록
         msg.body = f"인증 코드: {verification_code}"
         mail.send(msg)
 
     # 이메일 인증 코드 생성
     verification_code = generate_verification_code()
+    
     # 이메일 보내기 함수 호출
     send_email(signup_id, verification_code)
+    
     # email_verification_codes 딕셔너리에 저장
     email_verification_codes[signup_id] = verification_code
+    # ex) {signup_id : "1234"}
+    
     return jsonify(
         {
             "available": True,
@@ -132,18 +124,23 @@ def send_code():
 
 
 
-#######
+####### Verify email code
 @app.route("/verify", methods=["POST"])
 def verify():
     signup_id = request.form["signup_id"]
-    entered_code = request.form["verification_code"]
-    stored_verification_code = email_verification_codes.get(signup_id)
-    if not stored_verification_code:
+    entered_code = request.form["verification_code"]  # form에 작성한 4자리 인증코드
+    verification_code = email_verification_codes.get(signup_id)  # email_verification_codes에 저장된 4자리 인증코드
+    
+    # 저장된 인증코드와 입력 인증코드의 일치 확인
+    if not verification_code:
         return jsonify({"message": "인증 코드를 요청하지 않았거나 유효하지 않습니다."}), 400
-    if stored_verification_code == entered_code:
+    
+    elif verification_code == entered_code:
         return jsonify({"message": "인증 코드가 유효합니다. 이메일이 성공적으로 인증되었습니다."}), 200
+    
     else:
         return jsonify({"message": "인증 코드가 유효하지 않습니다. 다시 확인하세요."}), 400
+
 
 
 ####### Login
@@ -181,8 +178,9 @@ def upload():
         # 사용자 upload 이미지
         img_byte = io.BytesIO(image).getvalue()
         img_array = np.frombuffer(img_byte, np.uint8)
-        item_rembg_img, color_rembg_img,  = rembg(img_array)
-        og_img = cv2.imdecode(np.frombuffer(img_array, np.uint8), cv2.IMREAD_COLOR)
+        # print(img_array)
+        item_rembg_img, color_rembg_img = item_classifier.rembg(img_array)
+        print(item_rembg_img, color_rembg_img)
 
         # Item, Color, Style 판단
         try:
@@ -190,7 +188,7 @@ def upload():
             with ThreadPoolExecutor() as executor:
                 # 함수들을 제출하고 결과를 얻음
                 predicted_label1 = executor.submit(item_classifier.item_predict, item_rembg_img[:,:,:3]).result()
-                predicted_label2 = executor.submit(color_classifier.color_predict, og_img, color_rembg_img).result()
+                predicted_label2 = executor.submit(color_classifier.color_predict, item_rembg_img[:,:,:3], color_rembg_img).result()
                 predicted_label3 = executor.submit(item_classifier.style_predict, style).result()
 
             # 스레드 풀 종료
