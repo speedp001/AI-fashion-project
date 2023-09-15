@@ -131,7 +131,6 @@ class ItemClassifier:
 
 
 class ColorClassifier:
-    
     def __init__(self):
         # Read JSON file
         with open("./hex_map.json", "r") as j:
@@ -221,6 +220,7 @@ class ColorClassifier:
 
 
     def color_predict(self, image_data, mask_data): # image_data 에 mask img만 들어왔음 acensia
+        image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
         height, width, _ = image_data.shape
         print(image_data.shape)
         cropped_list = np.array(
@@ -228,14 +228,14 @@ class ColorClassifier:
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-                if mask_data[i][j] > 200
+                if mask_data[i][j] > 100
             ]
         )
         
         colors, counts_rate = self.dom_with_Kmeans(cropped_list)
         fst, snd, trd = colors[:3]
         # print(counts_rate)
-        # print(fst)
+        print(fst)
         # print(snd)
         # print(trd)
 
@@ -249,5 +249,5 @@ class ColorClassifier:
         )
         
         predicted_color_str = self.color_dictionary[p1]
-
+        print(self.rgb_to_hex(fst_cvt216))
         return predicted_color_str
