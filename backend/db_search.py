@@ -1,9 +1,13 @@
-from pymongo import MongoClient
-from bson.objectid import ObjectId
+####### DB에서 전체 데이터셋 조회 파일
+
 import numpy as np
+
+from bson.objectid import ObjectId
 from reference import style_array
 
 
+
+####### search code로 DB조회
 def DB_search(client, itemcode):
     fashion = client["fashion"]
     item_coll = fashion[str(itemcode[4:6])]
