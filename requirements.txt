@@ -4,3 +4,4 @@ rembg
 flask
 pymongo
 albumentations
+# torch torchvision
