@@ -5,46 +5,22 @@ import cv2
 import random
 import string
 import numpy as np
-<<<<<<< HEAD
 import bcrypt  # 암호 해싱 지원 라이브러리
-=======
-import bcrypt # 암호 해싱 지원 라이브러리
-from flask_mail import Mail, Message
-import random
-import string
->>>>>>> e4860b148f167118ea8a9eefe5aeae5565a1e802
 
 from pymongo import MongoClient
 from rembg import remove
 from flask_mail import Mail, Message
 from flask import Flask, request, jsonify, redirect, make_response
 from concurrent.futures import ThreadPoolExecutor
+from db_search import DB_search
 from classifier import ItemClassifier, ColorClassifier
 
-<<<<<<< HEAD
+
+
 ####### Flask 인스턴스 정의
 app = Flask(__name__)
 
 
-=======
-
-from db_search import DB_search # acensia
-
-
-app = Flask(__name__)
-
-
-# Flask-Mail config
-app.config["MAIL_SERVER"] = "smtp.gmail.com"  # 이메일 호스트 서버 설정
-app.config["MAIL_PORT"] = 587  # 이메일 호스트 포트 설정 (일반적으로 587 또는 465)
-app.config["MAIL_USE_TLS"] = True  # TLS(Transport Layer Security) 사용 여부 설정
-app.config["MAIL_USERNAME"] = "kdhwi92@gmail.com"  # 이메일 계정
-app.config["MAIL_PASSWORD"] = "kgnfjnorrakfrwzq"  # 이메일 비밀번호
-# Mail 인스턴스 생성
-mail = Mail(app)
-
-email_verification_codes = {}
->>>>>>> e4860b148f167118ea8a9eefe5aeae5565a1e802
 
 ####### MyClassifier 클래스 인스턴스 생성
 item_classifier = ItemClassifier()
@@ -155,6 +131,8 @@ def send_code():
     )
 
 
+
+#######
 @app.route("/verify", methods=["POST"])
 def verify():
     signup_id = request.form["signup_id"]
@@ -245,8 +223,6 @@ def upload():
         # 오류 처리 및 오류 코드 반환 -> 클라이언트 이미지 형식 문제, http통신 문제
         error_message = f"User error: {str(e)}"
         return jsonify({'error': error_message}), 400
-<<<<<<< HEAD
-=======
 
 
 ####### Sign-up
@@ -355,9 +331,8 @@ def verify():
         return jsonify({"message": "인증 코드가 유효합니다. 이메일이 성공적으로 인증되었습니다."}), 200
     else:
         return jsonify({"message": "인증 코드가 유효하지 않습니다. 다시 확인하세요."}), 400
->>>>>>> e4860b148f167118ea8a9eefe5aeae5565a1e802
-    
-    
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
