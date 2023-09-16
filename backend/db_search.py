@@ -18,16 +18,16 @@ def DB_search(client, itemcode):
     matched = []
     each_styles = [[] for _ in range(9)]
     result = {}
-    result["found"] = None
+    result["found"] = search_code
     result_sets = {}
     result["sets"] = {}
-
-    if len(list(singles)) == 0:
-        print("No data found")
-        return result
+    result["style"] = style
 
     result["found"] = search_code
+    cnt = 0  # mongodb에서 found한 cursors들을 한번 iterate 하면 처음으로 다시 돌아갈 수 없음 ㅠ
+    # print(singles[0]["code"])
     for s in singles:
+        cnt += 1
         each = s["code"][1]
         root = fashion["_cloth_sets"].find_one(
             {"_id": ObjectId(s["root"])}, {"_id": 0})
@@ -35,5 +35,7 @@ def DB_search(client, itemcode):
             result_sets[each] = []
         result_sets[each].append(root)
     result["sets"] = result_sets
+    if cnt == 0:
+        result["found"] = None
 
     return result

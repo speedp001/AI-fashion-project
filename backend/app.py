@@ -174,7 +174,7 @@ def upload():
         img_array = np.frombuffer(img_byte, np.uint8)
         # print(img_array)
         item_rembg_img, color_rembg_img = item_classifier.rembg(img_array)
-        print(item_rembg_img, color_rembg_img)
+        # print(item_rembg_img, color_rembg_img)
 
         # Item, Color, Style 판단
         try:
