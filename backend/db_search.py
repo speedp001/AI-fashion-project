@@ -16,26 +16,24 @@ def DB_search(client, itemcode):
     singles = item_coll.find({"code": {"$regex": search_code}}, {"_id": 0})
 
     matched = []
-    styles = np.zeros(9, dtype=int)
+    each_styles = [[] for _ in range(9)]
+    result = {}
+    result["found"] = None
+    result_sets = {}
+    result["sets"] = {}
 
+    if len(list(singles)) == 0:
+        print("No data found")
+        return result
+
+    result["found"] = search_code
     for s in singles:
-        styles[int(s["code"][1])] += 1
-        if s["code"] == itemcode:
-            matched.append(s)
+        each = s["code"][1]
+        root = fashion["_cloth_sets"].find_one(
+            {"_id": ObjectId(s["root"])}, {"_id": 0})
+        if each not in result_sets:
+            result_sets[each] = []
+        result_sets[each].append(root)
+    result["sets"] = result_sets
 
-    rank = np.argsort(styles[:-1])
-
-    if len(matched) == 0:
-        matched = [style_array[r] for r in rank if styles[r] != 0]
-        if (len(matched)) == 0:
-            print("No data for input")
-        return matched, None
-    id = matched[0]["root"]
-    sets = fashion["_cloth_sets"].find_one({"_id": ObjectId(id)}, {"_id": 0})
-    # print(len(sets))
-    # print(sets)
-    for i in sets["items"]:
-        if i["item"] == matched[0]["name"]:
-            sets["items"].remove(i)
-    print("Set is selected")
-    return None, sets
+    return result
