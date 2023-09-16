@@ -2,7 +2,7 @@ opencv-python
 bcrypt
 rembg
 flask
+flask_mail
 pymongo
 albumentations
-flask_mail
-# torch torchvision
+torch
