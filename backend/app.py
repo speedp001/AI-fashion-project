@@ -7,7 +7,6 @@ import numpy as np
 import bcrypt  # 암호 해싱 지원 라이브러리
 
 from pymongo import MongoClient
-from rembg import remove
 from flask_mail import Mail, Message
 from flask import Flask, request, jsonify, redirect, make_response
 from concurrent.futures import ThreadPoolExecutor
