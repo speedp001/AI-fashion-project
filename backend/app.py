@@ -26,9 +26,6 @@ color_classifier = ColorClassifier()
 
 
 
-####### Mail 인스턴스 생성
-mail = Mail(app)
-email_verification_codes = {}  # 인증코드 저장 딕셔너리
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"  # 이메일 호스트 서버 설정
 app.config["MAIL_PORT"] = 587  # 이메일 호스트 포트 설정 (일반적으로 587 또는 465)
@@ -37,6 +34,9 @@ app.config["MAIL_USERNAME"] = "kdhwi92@gmail.com"  # 관리자 이메일 계정
 app.config["MAIL_PASSWORD"] = "kgnfjnorrakfrwzq"  # 관리자 이메일 비밀번호
 
 
+####### Mail 인스턴스 생성
+mail = Mail(app)
+email_verification_codes = {}  # 인증코드 저장 딕셔너리
 
 ####### DB connection
 client = MongoClient("mongodb+srv://sudo:sudo@atlascluster.e7pmjep.mongodb.net/")
@@ -179,7 +179,7 @@ def upload():
         img_array = np.frombuffer(img_byte, np.uint8)
         # print(img_array)
         item_rembg_img, color_rembg_img = item_classifier.rembg(img_array)
-        print(item_rembg_img, color_rembg_img)
+        # print(item_rembg_img, color_rembg_img)
 
         # Item, Color, Style 판단
         try:
@@ -205,9 +205,9 @@ def upload():
 
         # DB에서 1,2,3,4 정보 조합해서 정보 조회
         try:
-            rec, result = DB_search(client, search_code)
+            result = DB_search(client, search_code)
             #json형태로 200코드와 조회 이미지를 딕셔너리형태로 클라이언트한테 반환해준다.
-            return jsonify({'rec' : rec, 'result' : result}), 200
+            return jsonify(result), 200
         
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제

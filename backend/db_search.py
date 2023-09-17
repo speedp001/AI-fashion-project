@@ -23,44 +23,28 @@ def DB_search(client, itemcode):
     # print(search_code)
     
     # 해당 코드로 검색
-    singles = item_coll.find({"code":{"$regex": search_code}}, {"_id":0})
-    # {"_id": 0}는 결과에서 _id 필드를 제외하도록 지정
+    singles = item_coll.find({"code":{"$regex": search_code}})
     
     # 검색된 목록 딕셔너리
-    matched = []
-    styles = np.zeros(9, dtype=int)
-    
-    # 성별, 색상, 아이템으로 스타일 목록을 순회하며 db에 일치하는 데이터 순회
-    for single in singles:
-        
-        # 현재 순회 중인 데이터의 스타일을 카운트
-        styles[int(single["code"][1])] += 1
-        # print(styles) -> [1 1 1 0 1 0 0 0 1]
-        
-        # 일치한 아이템을 찾으면 matched 딕셔너리에 추가
-        if single["code"] == itemcode:
-            matched.append(single)
-    
-    rank = np.argsort(styles)
-    # print(rank) -> [3 5 6 7 0 1 2 4 8]
-    
-    # 해당 조건에 맞는 아이템이 DB에 없을 때
-    if len(matched) == 0:
-        # DB에 해당 데이터가 없을 때 다른 스타일로 추천
-        matched = [style_array[r] for r in rank if styles[r] != 0]
-        # print(style_array[rank[0]])
-        
-        # rank 순위가 높은 순서대로 반환
-        return matched, None
-    
-    
-    # 찾은 단품 아이템 정보로 전체 데이터 셋에서 조회
-    id = matched[0]["root"]
-    sets = fashion["_cloth_sets"].find_one({"_id":ObjectId(id)}, {"_id":0})
-    # print(len(sets))
-    print(sets)
-    for i in sets["items"]:
-        if i["item"] == matched[0]["name"]:
-            sets["items"].remove(i)
-    print("search success")
-    return None, sets
+    each_styles = [[] for _ in range(9)] # style 마다 search 결과 저장을 위한 list
+    result = {} # response로 보낼 dict
+    result["found"] = search_code 
+    result_sets = {}
+    result["sets"] = {}
+    result["style"] = style
+
+    cnt = 0  # mongodb에서 found한 cursors들을 한번 iterate 하면 처음으로 다시 돌아갈 수 없어서 만든 변수
+    # print(singles[0]["code"])
+    for s in singles:
+        cnt += 1
+        each = s["code"][1]
+        root = fashion["_cloth_sets"].find_one(
+            {"_id": ObjectId(s["root"])}, {"_id": 0})
+        if each not in result_sets:
+            result_sets[each] = []
+        result_sets[each].append(root)
+    result["sets"] = result_sets
+    if cnt == 0:
+        result["found"] = None
+
+    return result
