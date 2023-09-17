@@ -26,17 +26,17 @@ color_classifier = ColorClassifier()
 
 
 
-
+####### Mail 인스턴스 생성
 app.config["MAIL_SERVER"] = "smtp.gmail.com"  # 이메일 호스트 서버 설정
 app.config["MAIL_PORT"] = 587  # 이메일 호스트 포트 설정 (일반적으로 587 또는 465)
 app.config["MAIL_USE_TLS"] = True  # TLS(Transport Layer Security) 사용 여부 설정
 app.config["MAIL_USERNAME"] = "kdhwi92@gmail.com"  # 관리자 이메일 계정
 app.config["MAIL_PASSWORD"] = "kgnfjnorrakfrwzq"  # 관리자 이메일 비밀번호
 
-
-####### Mail 인스턴스 생성
 mail = Mail(app)
 email_verification_codes = {}  # 인증코드 저장 딕셔너리
+
+
 
 ####### DB connection
 client = MongoClient("mongodb+srv://sudo:sudo@atlascluster.e7pmjep.mongodb.net/")
@@ -177,9 +177,7 @@ def upload():
         # 사용자 upload 이미지
         img_byte = io.BytesIO(image).getvalue()
         img_array = np.frombuffer(img_byte, np.uint8)
-        # print(img_array)
         item_rembg_img, color_rembg_img = item_classifier.rembg(img_array)
-        # print(item_rembg_img, color_rembg_img)
 
         # Item, Color, Style 판단
         try:
@@ -212,7 +210,6 @@ def upload():
         except Exception as e:
             # 오류 처리 및 오류 코드 반환 -> 서버 treading 문제
             error_message = f"DB error: {str(e)}"
-            print(error_message)
             return jsonify({'error': error_message}), 500    
         
     
