@@ -14,7 +14,7 @@ def DB_search(client, itemcode):
     fashion = client["fashion"]
     item_coll = fashion[str(itemcode[4:6])]  # itemcode item에 해당하는 fashion collection
     style = itemcode[1]  # itemcode style
-    search_code = itemcode[0] + ".*" + itemcode[2:] + "$"
+    search_code = "^" + itemcode[0] + ".*" + itemcode[2:] + "$"
     """
     문자열은 item[0]으로 시작해야 합니다.
     문자열의 두 번째 자리는 어떤 문자든지 상관 없습니다 (아무 문자나 와도 됩니다).
