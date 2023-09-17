@@ -26,24 +26,32 @@ def DB_search(client, itemcode):
     singles = item_coll.find({"code":{"$regex": search_code}})
     
     # 검색된 목록 딕셔너리
-    each_styles = [[] for _ in range(9)] # style 마다 search 결과 저장을 위한 list
-    result = {} # response로 보낼 dict
-    result["found"] = search_code 
+    result = {}  # response로 보낼 dict
+    result["found"] = search_code
     result_sets = {}
     result["sets"] = {}
     result["style"] = style
 
-    cnt = 0  # mongodb에서 found한 cursors들을 한번 iterate 하면 처음으로 다시 돌아갈 수 없어서 만든 변수
+    # cnt를 이용해서 DB 적재 여부 판단
+    cnt = 0
     # print(singles[0]["code"])
-    for s in singles:
+    
+    for single in singles:
         cnt += 1
-        each = s["code"][1]
-        root = fashion["_cloth_sets"].find_one(
-            {"_id": ObjectId(s["root"])}, {"_id": 0})
+        each = single["code"][1]
+        
+        # single root 카테고리로 _cloth_sets 데이터 collection에서 탐색 -> outfit에 저장
+        outfit = fashion["_cloth_sets"].find_one({"_id": ObjectId(single["root"])}, {"_id": 0})
+        
         if each not in result_sets:
-            result_sets[each] = []
-        result_sets[each].append(root)
+            result_sets[each] = [] #1 -> result_set{"1":[outfit1, outfit2], "2": [outfit1]}
+        
+        result_sets[each].append(outfit)
+    
+    # print(result_sets) -> [{'set_url': {}... items: [개별 아이템1: {} 개별 아이템2: {}]}]
     result["sets"] = result_sets
+    
+    # DB에 해당 조건 데이터 없는 경우
     if cnt == 0:
         result["found"] = None
 
