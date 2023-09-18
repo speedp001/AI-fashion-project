@@ -46,7 +46,9 @@ def DB_search(client, itemcode):
         if each not in result_sets:
             result_sets[each] = [] #1 -> result_set{"1":[outfit1, outfit2], "2": [outfit1]}
         
-        result_sets[each].append(outfit)
+        # 출력 결과가 최대 10개까지되도록 설정
+        if len(result_sets[each]) < 10:
+            result_sets[each].append(outfit)
     
     # print(result_sets) -> [{'set_url': {}... items: [개별 아이템1: {} 개별 아이템2: {}]}]
     result["sets"] = result_sets
