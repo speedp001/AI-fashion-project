@@ -173,6 +173,7 @@ def upload():
         # 사용자 upload 이미지
         img_byte = io.BytesIO(image).getvalue()
         img_array = np.frombuffer(img_byte, np.uint8)
+
         item_rembg_img, color_rembg_img = item_classifier.rembg(img_array)
 
         # Item, Color, Style 판단
