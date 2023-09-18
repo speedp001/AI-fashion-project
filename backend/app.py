@@ -14,6 +14,7 @@ from db_search import DB_search
 from classifier import ItemClassifier, ColorClassifier
 
 
+
 ####### Flask 인스턴스 정의
 app = Flask(__name__)
 
