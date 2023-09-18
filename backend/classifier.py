@@ -1,11 +1,15 @@
+####### app.py에서 호출할 Item, Color, Style 분류기 파일
+
 import cv2
 import json
 import torch
 import numpy as np
 import torch.nn as nn
+from rembg import remove
 import torchvision.models as models
 import albumentations as A
 
+from reference import style_dict, color_dict
 from sklearn.cluster import KMeans
 from albumentations.pytorch import ToTensorV2
 
@@ -14,16 +18,16 @@ from albumentations.pytorch import ToTensorV2
 
 
 
-
+####### Item 및 Style 분류기 
 class ItemClassifier:
-    
+    # 인스턴스 변수
     def __init__(self):
         self.device = self.gpu()
         self.model = self.initialize_model()
         # self.item_dictionary = self.create_item_dictionary()
-        self.style_dictionary = self.create_style_dictionary()
+        self.style_dictionary = style_dict
 
-
+    # gpu 환경설정
     def gpu(self):
         if torch.cuda.is_available():
             device = torch.device("cuda")
@@ -39,7 +43,7 @@ class ItemClassifier:
             
         return device
             
-
+    # 모델 정의 함수
     def initialize_model(self):
         model = models.efficientnet_b0()
         model.classifier[0] = nn.Dropout(p=0.5, inplace=True)
@@ -50,45 +54,21 @@ class ItemClassifier:
         model = model.to(self.device)
         
         return model
-
-
-    # def create_item_dictionary(self):
-        
-    #     # Create label_dictionary -> 참고용
-    #     item_dict = {
-    #         'both_blouse': 0,
-    #         'both_cardigan': 1, 
-    #         'both_cargo_pants': 2, 
-    #         'both_denim_pants': 3, 
-    #         'both_hooded': 4, 
-    #         'both_hooded_zipup': 5, 
-    #         'both_leggings': 6, 
-    #         'both_long-sleeved_T-shirt': 7,
-    #         'both_long_pants': 8,
-    #         'both_onepiece': 9,
-    #         'both_shirt': 10, 
-    #         'both_skirt': 11, 
-    #         'both_sport_pants': 12, 
-    #         'both_sweatshirt': 13, 
-    #         'fw_coat': 14, 
-    #         'fw_jacket': 15, 
-    #         'fw_knitwear': 16, 
-    #         'fw_padding': 17, 
-    #         'ss_polo_shirt': 18, 
-    #         'ss_short-sleeved_T-shirt': 19, 
-    #         'ss_short_pants': 20
-    #         }
-        
-        
-    #     reverse_item_dict = {v: k for k, v in item_dict.items()}
-    #     return reverse_item_dict
     
-    def create_style_dictionary(self):
-        style_dict = {'casual': '0', 'dandy': '1', 'formal': '2', 'girlish': '3', 'gorpcore': '4', 'retro': '5', 'romantic': '6', 'sports': '7', 'street': '8'}
-        
-        return style_dict
+    
+    # 사용자 이미지 배경제거 함수
+    def rembg(self, img):
+        # 이미지 데이터를 바이너리에서 이미지로 디코딩
+        org_image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_COLOR)
 
+        # 배경을 흰색으로 변경 -> bgcolor=(b, g, r, a)
+        color_rembg_img = remove(org_image, only_mask=True)
+        item_rembg_img = remove(org_image, bgcolor=(255, 255, 255, 255))
 
+        return item_rembg_img, color_rembg_img
+    
+    
+    # 이미지 전처리 함수
     def image_preprocessing(self, image_data):
         image_transform = A.Compose([
             A.Resize(width=480, height=640),
@@ -102,7 +82,7 @@ class ItemClassifier:
         img = img.unsqueeze(0).to(self.device)
         return img
 
-
+    # 아이템 예측 함수
     def item_predict(self, image_data):
         image_tensor = self.image_preprocessing(image_data)
 
@@ -117,7 +97,7 @@ class ItemClassifier:
 
         return predicted_item_str
 
-    
+    # 스타일 예측 함수
     def style_predict(self, style):
         predicted_style_str = self.style_dictionary[style]
         
@@ -129,47 +109,21 @@ class ItemClassifier:
 
 
 
-
+####### Color 분류기
 class ColorClassifier:
-    
+    # 인스턴스 변수
     def __init__(self):
         # Read JSON file
         with open("./hex_map.json", "r") as j:
             self.hex_dict = json.load(j)
         
-        self.color_dictionary = self.create_color_dictionary()
-        
-    def create_color_dictionary(self):
-        color_dict = {
-            "beige": '00', 
-            "black": '01', 
-            "blue": '02', 
-            "brown": '03', 
-            "burgundy": '04', 
-            "gray": '05', 
-            "green": '06', 
-            "khaki": '07', 
-            "lightgreen": '08', 
-            "lightpurple": '09', 
-            "mint": '10', 
-            "navy": '11', 
-            "orange": '12', 
-            "pink": '13', 
-            "purple": '14', 
-            "red": '15', 
-            "skyblue": '16', 
-            "teal": '17', 
-            "white": '18', 
-            "yellow": '19'
-        }
-        
-        return color_dict
+        self.color_dictionary = color_dict
     
-
+    # rgb -> hex code
     def rgb_to_hex(self, rgb):  # convert rgb array to hex code
         return "{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
 
-
+    # pxs 변환
     def cvt216(self, pxs):  # convert rgb into the value in 216
         st = [0, 51, 102, 153, 204, 255]
         p0 = min(st, key=lambda x: abs(x - pxs[0]))
@@ -178,7 +132,7 @@ class ColorClassifier:
 
         return np.array((p0, p1, p2))
 
-
+    # Kmeans 적용 함수
     def dom_with_Kmeans(self, img_list, k=3):  # use kmeans
         pixels = img_list
 
@@ -219,16 +173,17 @@ class ColorClassifier:
 
         return dom_colors, dom_counts_rate
 
-
+    # 색상 예측 함수
     def color_predict(self, image_data, mask_data): # image_data 에 mask img만 들어왔음 acensia
+        image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
         height, width, _ = image_data.shape
-        print(image_data.shape)
+        # print(image_data.shape)
         cropped_list = np.array(
             [
                 image_data[i][j]
                 for i in range(height)
                 for j in range(width)
-                if mask_data[i][j] > 200
+                if mask_data[i][j] > 100
             ]
         )
         
@@ -249,5 +204,5 @@ class ColorClassifier:
         )
         
         predicted_color_str = self.color_dictionary[p1]
-
+        # print(self.rgb_to_hex(fst_cvt216))
         return predicted_color_str
