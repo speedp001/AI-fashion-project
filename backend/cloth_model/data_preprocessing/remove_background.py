@@ -6,6 +6,8 @@ import glob
 from rembg import remove
 from tqdm import tqdm
 
+
+
 # 작업을 진행할 디렉토리 경로
 path = "./"
 org_image = glob.glob(os.path.join(path, "*.jpg"))
