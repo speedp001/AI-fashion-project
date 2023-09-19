@@ -3,6 +3,8 @@
 import os
 import hashlib
 
+
+
 # 중복 이미지를 검사하고 삭제할 폴더를 지정
 folder_path = './'
 
