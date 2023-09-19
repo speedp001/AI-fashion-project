@@ -4,6 +4,8 @@ import os
 import cv2
 import glob
 
+
+
 # 사이즈를 검사할 디렉토리 지정
 path = "./"
 input_dir = glob.glob(os.path.join(path, "*", "*.png"))
