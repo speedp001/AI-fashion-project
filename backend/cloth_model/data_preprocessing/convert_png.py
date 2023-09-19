@@ -4,6 +4,8 @@ from PIL import Image
 import os
 from tqdm import tqdm
 
+
+
 # 변환할 폴더의 경로를 설정
 base_dir = './'
 
