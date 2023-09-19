@@ -4,6 +4,8 @@ import os
 import random
 import shutil
 
+
+
 # 원본 이미지 파일이 있는 디렉토리 경로
 source_directory = "./"
 
