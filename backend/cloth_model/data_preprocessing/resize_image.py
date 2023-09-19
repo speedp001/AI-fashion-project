@@ -3,6 +3,8 @@
 import os
 import cv2
 
+
+
 input_dir = './'  # 이미지가 들어있는 디렉토리 경로
 
 output_dir = './'  # 크기 변경된 이미지를 저장할 디렉토리 경로
