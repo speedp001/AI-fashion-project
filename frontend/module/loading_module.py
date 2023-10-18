@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import requests
 
+
 def result_backend():
     if not st.session_state["flask_upload_url"]:
         print("No url")
