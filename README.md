@@ -75,22 +75,27 @@ pip install -r requirements.txt
 
 - 최준혁(PL)
 >Github ID: acensia
+>
 >Database Design, Color Classifier, Data Collection, Web Crawling
 
 - 이상윤
 >Github ID: speedp001
+>
 >Item Classifier Model, Rembg API, Backend Design, Data Collection and Processing
 
 - 조현준
 >Github ID: Hyunjun999
+>
 >Database Design, Backend Design, Color Classifier, Rembg API, Data Collection
 
 - 김동휘
 >Github ID: Donghwi00
+>
 >Login and Sign-up, Email Verification Service, Data Collection and Processing
 
 - 명승호
 >Github ID: LuckyMspace
+>
 >Frontend Design, Data Collection, Color Classifier
 
 ## Demo Video
