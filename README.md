@@ -1,13 +1,13 @@
 # AI Fashion Recommendation Service
 
-<img src = /image/logo.png>
+![Logo](https://imgur.com/L1fCcL9)
 
 >사용자의 개별 옷 사진을 업로드하면 그 옷에 어울리는 코디들을 보여주는 프로그램입니다.
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
 ---
 ## 1. Index
   - [Motivation](#Motivation)
-  - [Development Environment](#3.-development-environmnet)
+  - [Development Environment](#development-environmnet)
   - [Key Features](#Key-features)
   - [Requirements](#Requirements)
   - [Demo Video](#Demo-Video)
@@ -20,7 +20,7 @@
 >
 >새로운 아이템의 매치가 궁금한 사람들을 위해 쉽게 코디하고 추천 상품까지 연결해주는 서비스를 제공하고 싶었습니다.
 
-## 3. Development Environment
+## Development Environment
 
 > Pytorch
 > MongoDB
@@ -28,7 +28,7 @@
 > Streamlit
 > Remove background API
 
-## 4. Key Features
+## Key Features
 
 - Remove background
 >Voice recognition text storage function
@@ -39,14 +39,14 @@
 - Sign up / Sign in
 >You can shared diary with designated people.
 
-## 5. Requirements
+## Requirements
 
 프로젝트를 실행하려면 먼저 필요한 라이브러리를 설치해야 합니다. 아래는 필요한 라이브러리들이 나열되어 있는 `requirements.txt` 파일을 사용하여 설치하는 방법입니다.
 ```sh
 pip install -r requirements.txt
 ```
 
-## 6. Demo Video
+## Demo Video
 YouTube link
 https://youtu.be/ONddK9AoYs4?feature=shared
 
