@@ -6,19 +6,19 @@
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
 ---
 ## 1. Index
-  - [Development Environment](#development-environmnet) 
-  - [Getting Started](#getting-started)
-  - [Contributing](#contributing)
-  - [Authors](#authors)
-  - [License](#license)
+  - [Motivation](#getting-started)
+  - [Development Environment](#development-environmnet)
+  - [Key Features](#Key-features)
+  - [Requirements](#Requirements)
+  - [Demo Video](#Demo-Video)
 
 ## 2. Motivation
 
-> 매년 다양한 스타일과 유행하고 개성을 반영하지 못한 스타일, 스타일을 찾지 못한 아이템이 잉여자원으로 낭비되고 있는 현실을 보며 매일 아침 코디가 귀찮고 힘든 사람, 새로운 아이템의 매치가 힘든 사람
+> 매년 다양한 스타일과 유행과 트렌드를 따라가기 번거로운 사람
+> 
+>스타일을 찾지 못한 아이템이 잉여자원으로 낭비되고 보며 매일 코디하기가 귀찮은 사람
 >
->Even if you set your account private, it will eventually be open to friends who are following you.
->
->Various functions that can be shared in groups with a large number of friends have been developed such as a group diary, that is, recorDiary.
+>새로운 아이템의 매치가 궁금한 사람들을 위해 쉽게 코디하고 추천 상품까지 연결해주는 서비스를 제공하고 싶었습니다.
 
 ## 3. Development Environment
 
@@ -30,60 +30,23 @@
 
 ## 4. Key Features
 
-- Speech recognition
+- Remove background
 >Voice recognition text storage function
-- Schedule manage with Calendar
+- Item classifier
 >Edit and write schedule in the form of a calendar
-- Music tag and mood expression
+- Color classifier
 >Choose emoticon that suits your mood and tag the music
-- Share diary with designated Friends
+- Sign up / Sign in
 >You can shared diary with designated people.
 
-## 5. How to use
+## 5. Requirements
 
-1) Make a id and Password
-> Users register information in firebase.
-2) Set Nickname
-> Users set unique nickname that using for share diary
-3) Add Schedule in Schedule Calender
-> Edit and write the schedule for each day in form of a calender
-4) Add Main Diary
-> A place to create a diary that can share with your friends
-5) Write Daily Dairy
-> Voice recognition and add mood emotion with BGM, image input are possible on this page
-6) Share Dairy
-> Make Diary to share with designated people by private code
-
-## 6. Contributor
-- 최준혁
-> Manage API
-> 
-> Design GUI
-> 
-> Structure Design
-
-- 이상윤
->Manage Server
->
->Music Algorithm
->
->Structure Design
-
-- 김동휘
-> Manage API
-> 
-> Sign up service
-> 
-> Design GUI
-
-- 명승호
-> Share Function
-> 
-> Manage Firebase
-> 
-> Calendar View
+프로젝트를 실행하려면 먼저 필요한 라이브러리를 설치해야 합니다. 아래는 필요한 라이브러리들이 나열되어 있는 `requirements.txt` 파일을 사용하여 설치하는 방법입니다.
+```sh
+pip install -r requirements.txt
+```
 
 ## 6. Demo Video
 YouTube link
-https://youtu.be/TRAbu6dWG1Q
+https://youtu.be/ONddK9AoYs4?feature=shared
 
