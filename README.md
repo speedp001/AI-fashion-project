@@ -6,8 +6,8 @@
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
 ---
 ## 1. Index
-  - [Motivation](#getting-started)
-  - [Development Environment](#development-environmnet)
+  - [Motivation](#2.-Motivation)
+  - [Development Environment](#3.-development-environmnet)
   - [Key Features](#Key-features)
   - [Requirements](#Requirements)
   - [Demo Video](#Demo-Video)
