@@ -1,6 +1,6 @@
 # AI Fashion Recommendation Service
 
-<img src = /Users/sang-yun/Desktop/logo.png>
+<img src = /image/logo.png>
 
 >사용자의 개별 옷 사진을 업로드하면 그 옷에 어울리는 코디들을 보여주는 프로그램입니다.
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
