@@ -6,13 +6,13 @@
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
 ---
 ## 1. Index
-  - [Motivation](#Motivation)
-  - [Development Environment](#development-environmnet)
+  - [Motivation](#2.Motivation)
+  - [Development Environment](#Development-Environmnet)
   - [Key Features](#Key-features)
   - [Requirements](#Requirements)
   - [Demo Video](#Demo-Video)
 
-## Motivation
+## 2.Motivation
 
 > 매년 다양한 스타일과 유행과 트렌드를 따라가기 번거로운 사람
 > 
@@ -23,15 +23,21 @@
 ## Development Environment
 
 > Pytorch
+> 
 > MongoDB
+> 
 > Flask
+> 
 > Streamlit
+> 
 > Remove background API
 
 ## Key Features
 
 - Remove background
->Voice recognition text storage function
+>Remove background API를 사용하여 사용자가 업로드한 이미지를 딥러닝 모델이 학습한 데이터에 맞추기 위해 배경을 삭제해주는 과정이 들어갑니다.
+![Logo](https://i.imgur.com/ChD28Lw.png)
+
 - Item classifier
 >Edit and write schedule in the form of a calendar
 - Color classifier
