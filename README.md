@@ -59,9 +59,8 @@
 - Result
 >AI 모델이 상품을 판단하고 해당 상품에 어울리는 옷 코디와 가격, 구매 링크 등 세부 정보까지 알려줍니다.
 <div style="display:flex; justify-content:space-between;">
-    <img src="https://i.imgur.com/I7WyHG5.png" alt="Login" style="width: 30%; object-fit: cover;">
-    <img src="https://i.imgur.com/k5KQmo5.png" alt="Login" style="width: 30%; object-fit: cover;">
-    <img src="https://i.imgur.com/XVGLF11.png" alt="Login" style="width: 30%; object-fit: cover;">
+    <img src="https://i.imgur.com/I7WyHG5.png" alt="Login" style="width: 45%; object-fit: cover;">
+    <img src="https://i.imgur.com/k5KQmo5.png" alt="Login" style="width: 45%; object-fit: cover;">
 </div>
 
 ## Requirements
