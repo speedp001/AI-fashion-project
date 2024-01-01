@@ -1,6 +1,6 @@
 # AI Fashion Recommendation Service
 
-![Logo](https://user-images.githubusercontent.com/44600564/173354358-bdf5147e-bda5-44fa-8e8f-0ce136cd4147.png)
+![Logo](https://drive.google.com/file/d/1B0_c71LXMuPcg0mR1oAgSMiMf25-mUlS/view?usp=drive_link)
 
 >사용자의 개별 옷 사진을 업로드하면 그 옷에 어울리는 코디들을 보여주는 프로그램입니다.
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
