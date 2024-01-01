@@ -6,13 +6,13 @@
 >사용자는 원하는 스타일을 선택하여 골라 추천받을 수 있습니다.
 ---
 ## 1. Index
-  - [Motivation](#2.-Motivation)
+  - [Motivation](#Motivation)
   - [Development Environment](#3.-development-environmnet)
   - [Key Features](#Key-features)
   - [Requirements](#Requirements)
   - [Demo Video](#Demo-Video)
 
-## 2. Motivation
+## Motivation
 
 > 매년 다양한 스타일과 유행과 트렌드를 따라가기 번거로운 사람
 > 
