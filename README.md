@@ -50,9 +50,11 @@
 ![Color](https://i.imgur.com/RJaKWFi.png)
 
 - Login / Sign up
->사용자 기반 서비스이므로 
-![Color](https://i.imgur.com/lrlGt3z.png)
-![Color](https://i.imgur.com/Wo256S3.png)
+>사용자 기반 서비스이므로 회원가입과 로그인 서비스를 통해 개인화된 서비스를 제공합니다.
+<div style="display:flex; justify-content:space-between;">
+    <img src="https://i.imgur.com/lrlGt3z.png" alt="Login" width="45%">
+    <img src="https://i.imgur.com/Wo256S3.png" alt="Login" width="45%">
+</div>
 
 - Result
 >AI 모델이 상품을 판단하고 해당 상품에 어울리는 옷 코디와 가격, 구매 링크 등 세부 정보까지 알려줍니다.
