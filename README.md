@@ -40,7 +40,7 @@
 ![Rembg](https://i.imgur.com/ChD28Lw.png)
 
 - Item classifier
->사용자가 업로드한 이미지에 해당하는 상품이 뭔지 판단합니다. efficientnet_b0모델을 사용하였고 라벨링은 옷 상품에 따라 총 21개입니다.
+>사용자가 업로드한 이미지에 해당하는 상품이 무엇인지 판단합니다. efficientnet_b0모델을 사용하였고 라벨링은 옷 상품에 따라 총 21개입니다.
 <div style="display:flex; justify-content:space-between;">
     <img src="https://i.imgur.com/MnwCpVJ.jpg" alt="Model" width="45%">
     <img src="https://i.imgur.com/3ep33HL.jpg" alt="Model" width="45%">
