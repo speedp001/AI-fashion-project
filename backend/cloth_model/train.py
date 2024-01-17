@@ -253,20 +253,20 @@ def main_worker(gpu, ngpus_per_node, args):
     
     
     
-    ####### Device 설정
-    if torch.cuda.is_available():
-        if args.gpu:
-            device = torch.device('cuda:{}'.format(args.gpu))
-            print(f"{args.gpu} : CUDA")
-        else:
-            device = torch.device("cuda")
-            print("GPU 가속기 : CUDA")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps")
-        print("GPU 가속기 : MPS")
-    else:
-        device = torch.device("cpu")
-        print("CPU 연산")
+    # ####### Device 설정
+    # if torch.cuda.is_available():
+    #     if args.gpu:
+    #         device = torch.device('cuda:{}'.format(args.gpu))
+    #         print(f"{args.gpu} : CUDA")
+    #     else:
+    #         device = torch.device("cuda")
+    #         print("GPU 가속기 : CUDA")
+    # elif torch.backends.mps.is_available():
+    #     device = torch.device("mps")
+    #     print("GPU 가속기 : MPS")
+    # else:
+    #     device = torch.device("cpu")
+    #     print("CPU 연산")
         
         
         
