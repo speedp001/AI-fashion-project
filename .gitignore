@@ -1,1 +1,6 @@
+# ignore pycache
 *.pyc
+
+# ignore cloth dataset
+/backend/cloth_model/cloth_dataset
+
